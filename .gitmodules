@@ -1,0 +1,3 @@
+[submodule "modules/VisCore"]
+	path = modules/VisCore
+	url = git@github.com:hajimeru/VisCore.git
