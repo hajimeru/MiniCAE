@@ -46,6 +46,18 @@ VTKFileReader 读取支持范围内的线性三角形/四面体文件；产品�
 
 现有 UCP、VTKFileReader 等模块的 CMake 仍需评估作为子目录时的测试/示例开关。本次未运行模块测试，不声明可直接集成或已支持 WASM。
 
+## 依赖管理：Conan 与 Git 子模块
+
+自研模块（包括 header-only 的 UCP）使用 Git 子模块固定提交；第三方库优先使用 Conan 2，不按是否需要编译区分接入方式。产品为一次构建统一解析第三方依赖，再向模块提供 CMake target；子目录不执行独立 Conan 安装。
+
+VisCore 单独开发使用自己的依赖清单；集成到 MiniCAE 时采用产品清单，二者约束保持兼容。开发者在构建前显式执行 Conan，CMake 通过生成的工具链与依赖配置消费结果。Conan 仅管理构建依赖，GPU 驱动不属于包依赖；Vulkan SDK/Shader 工具的具体来源待首个构建设计确定。
+
+复现构建需要固定包版本、recipe revisions/lockfile 与 host/build profiles。lockfile 不替代 MSVC、架构、运行库、Debug/Release 和工具版本记录。未来 WASM 使用独立 profile/构建目录，并单独解析验证依赖图。
+
+极小、稳定且需随源码分发的工具可内置 `third_party/`，记录上游地址、版本或提交、许可证、更新方法和本地修改。需要持续改动的第三方库考虑维护 fork 与自定义 Conan recipe，确有源码开发需求时才选子模块。同一依赖在一次构建中只使用一种来源。
+
+当前只确定依赖管理规则，尚未创建 Conan recipe、profile 或 lockfile，也未执行依赖安装。
+
 ## 执行顺序与验收
 
 1. 创建两个本地独立 Git 仓库与 AGENTS.md；核对文档指针与职责一致。

@@ -15,6 +15,7 @@
 |---|---|
 | MSVC：cl.exe / link.exe | 编译、链接 Windows C++ 代码 |
 | CMake | 配置工程、组织目标、生成构建规则 |
+| Conan 2 | 管理第三方依赖，包括纯头文件库，生成 CMake 工具链与包配置 |
 | Ninja | 执行 CMake 生成的构建任务 |
 | VS Code | 编辑、运行构建任务、调试 |
 | Vulkan SDK 与 GPU 驱动 | 开发工具、验证层、Shader 编译与实际运行 |
@@ -58,7 +59,11 @@ vulkaninfo --summary
 
 随后由应用验证目标设备、队列、Surface、格式、呈现模式与所需 feature。记录 GPU 和驱动；软件设备结果不当作硬件性能。
 
-GLFW、可选 ImGui 以及 Shader 编译工具统一通过项目锁定版本获取。依赖需采用一致的 x64 架构与兼容的 MSVC 运行库；Debug/Release、静态/动态链接策略在工程建立时明确。
+第三方库（含 header-only）优先通过 Conan 2 获取固定版本；自研模块通过 Git 子模块固定提交。GLFW、可选 ImGui、Vulkan 开发组件及 Shader 工具的具体包与版本在首次构建设计中确认，GPU 驱动由系统提供。
+
+Conan 独立于 CMake 配置步骤显式运行，通过 CMakeToolchain/CMakeDeps 提供工具链和依赖 target。MiniCAE 集成时统一解析依赖，VisCore 独立开发时使用自己的兼容清单。依赖采用一致的 x64 架构与兼容 MSVC 运行库；记录 lockfile、host/build profiles、Debug/Release 与静态/动态链接策略。
+
+后文 CMake 命令和 Preset 仍是未接入 Conan 的基础模板；工程实现时须接入实际生成的工具链/Presets，不能直接假定它们已包含 Conan 配置。当前尚未安装或生成任何 Conan 工程文件。
 
 ## 3. 先打通 MSVC 环境
 
